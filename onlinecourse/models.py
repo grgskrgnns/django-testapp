@@ -118,6 +118,9 @@ class Question(models.Model):
         else:
             return False
 
+    def __str__(self):
+        return self.question_text
+
 
 #  <HINT> Create a Choice Model with:
     # Used to persist choice content for a question
@@ -129,6 +132,8 @@ class Choice(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     choice_text = models.CharField(max_length=1024, default="This is an answer")
     is_correct = models.BooleanField(default=True)
+    def __str__(self):
+        return self.choice_text
 
 
 # <HINT> The submission model
