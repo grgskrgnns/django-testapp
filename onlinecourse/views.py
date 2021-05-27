@@ -138,6 +138,22 @@ def show_exam_result(request, course_id, submission_id):
     course = get_object_or_404(Course, pk=course_id)
     submission = get_object_or_404(Submission, pk=submission_id)
     submitted_answers = extract_answers(request)
+    questions = []
+    total = 0
+    gradesum = 0
+    for choice_id in submitted_answers:
+        choice = Choice.objects.get(id=choice_id)
+        question = Question.objects.get(id=choice.question_id)
+        if choice.question_id not in questions:
+            total = total +1
+            questions.append(choice.question_id)
+    for question_id in questions:
+        question = Question.objects.get(id=choice.question_id)
+        gradesum = gradesum + question.is_get_score(submitted_answers)
+    context = {}
+    context['grade']=gradesum*100.0/total
+    return render(request, 'onlinecourse/exam_result_bootstrap.html', context)
+
 
 
 
