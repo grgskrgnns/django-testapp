@@ -115,6 +115,7 @@ def submit(request, course_id):
     user = request.user
     enrollment = Enrollment.objects.get(user=user, course=course)
     submission = Submission.objects.create(enrollment=enrollment)
+    show_exam_result(request, course_id, submission.submission_id)
     
 
 # <HINT> A example method to collect the selected choices from the exam form from the request object
