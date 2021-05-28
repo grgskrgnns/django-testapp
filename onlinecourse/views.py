@@ -115,7 +115,7 @@ def submit(request, course_id):
     user = request.user
     enrollment = Enrollment.objects.get(user=user, course=course)
     submission = Submission.objects.create(enrollment=enrollment)
-    show_exam_result(request, course_id, submission.submission_id)
+    return show_exam_result(request, course_id, submission.id)
     
 
 # <HINT> A example method to collect the selected choices from the exam form from the request object
@@ -152,8 +152,11 @@ def show_exam_result(request, course_id, submission_id):
         question = Question.objects.get(id=choice.question_id)
         gradesum = gradesum + question.is_get_score(submitted_answers)
     context = {}
+    grade = gradesum*100.0/total
     context['grade']=gradesum*100.0/total
-    return render(request, 'onlinecourse/exam_result_bootstrap.html', context)
+    context['course_id'] = course_id
+    response =  render(request, 'onlinecourse/exam_result_bootstrap.html', context)
+    return response
 
 
 
