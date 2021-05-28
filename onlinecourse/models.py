@@ -117,6 +117,13 @@ class Question(models.Model):
             return True
         else:
             return False
+    
+    def get_corrects(self):
+        corrects = self.choice_set.filter(is_correct=True)
+        correctanswers = []
+        for cr in corrects:
+            correctanswers.append(cr.id)
+        return correctanswers
 
     def __str__(self):
         return self.question_text

@@ -8,6 +8,7 @@ from django.urls import reverse
 from django.views import generic
 from django.contrib.auth import login, logout, authenticate
 import logging
+import math
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
 # Create your views here.
@@ -142,19 +143,30 @@ def show_exam_result(request, course_id, submission_id):
     questions = []
     total = 0
     gradesum = 0
+    ansdict = {}
+    anscorrect = {}
     for choice_id in submitted_answers:
         choice = Choice.objects.get(id=choice_id)
         question = Question.objects.get(id=choice.question_id)
         if choice.question_id not in questions:
             total = total +1
             questions.append(choice.question_id)
+            ansdict[choice.question_id]=[choice_id]
+            anscorrect[choice.question_id]=[]
+        else:
+            ansdict[choice.question_id].append(choice_id)
     for question_id in questions:
-        question = Question.objects.get(id=choice.question_id)
-        gradesum = gradesum + question.is_get_score(submitted_answers)
+        question = Question.objects.get(id=question_id)
+        gradesum = gradesum + question.is_get_score(ansdict[question_id])
+        corrects = question.get_corrects()
+        anscorrect[question_id].append(corrects)
     context = {}
-    grade = gradesum*100.0/total
-    context['grade']=gradesum*100.0/total
+    grade = math.floor((gradesum*100.0/total)*100)/100
+    context['grade']=grade
     context['course_id'] = course_id
+    context['given']=ansdict
+    context['corrects']=anscorrect
+    context['questions']=questions
     response =  render(request, 'onlinecourse/exam_result_bootstrap.html', context)
     return response
 
